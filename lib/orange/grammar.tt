@@ -1,0 +1,94 @@
+grammar Orange
+  rule script
+    expression more_expressions:(linebreak space expression)* <Script> {
+      def expressions
+        [expression] + more_expressions.elements.map { |e| e.expression }
+      end
+    }
+  end
+  
+  rule expression
+    spaced_statements:(space statement)+ space <Expression> {
+      def statements
+        spaced_statements.elements.map { |e| e.statement }
+      end
+    }
+    /
+    space
+  end
+  
+  rule statement
+    assign / call / object / comment
+  end
+  
+  rule object
+    symbol / number / string / var
+  end
+  
+  rule call
+    receiver:object space message arglist <Call>
+  end
+  
+  rule message
+    "+" / "-" / "==" / "!=" /
+    "." var {
+      def value
+        var.value
+      end
+    }
+  end
+  
+  rule arglist
+    "(" arglist ")" {
+      def args; arglist.args end
+    } /
+    space receiver:object more_args:(space "," space receiver:object)* {
+      def args
+        [receiver] + more_args.elements.map { |e| e.receiver }
+      end
+    } /
+    space {
+      def args; [] end
+    }
+  end
+  
+  rule assign
+    var space "=" expression <Assign>
+  end
+  
+  rule var
+    [a-z] [\w]*
+  end
+  
+  rule symbol
+    ":" var
+  end
+  
+  rule number
+    [0-9]+ {
+      def value
+        text_value.to_i
+      end
+    }
+  end
+  
+  rule string
+    '"' (!'"' . / '\"')* '"' {
+      def value
+        text_value.gsub('"', '')
+      end
+    }
+  end
+  
+  rule comment
+    "#" [^\n]*
+  end
+  
+  rule space
+    [ ]*
+  end
+  
+  rule linebreak
+    [\n]+ / ";"
+  end
+end
