@@ -11,9 +11,11 @@ parser = OrangeParser.new
   # ohaie
   # x = 2 + 1
   # you.say "hi"
-puts parser.parse(<<-EOS).inspect #codegen.to_s
-  items.each do
-    i.to_s
-    x = 2
+puts parser.parse(<<-EOS).codegen.to_s
+  # ohaie
+  x = 2 + 1
+  you.say "hi"
+  items.each :one do |i, j|
+    i.say("hi")
   end
 EOS

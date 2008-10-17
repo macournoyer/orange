@@ -49,12 +49,15 @@ module Orange
   class Call < Node
     def codegen(context)
       puts "call: #{receiver.value}.#{message.value}(#{arglist.args.map { |a| a.value }.join(", ")})"
+      arglist.codegen(context) if arglist.is_a?(Block)
+      arglist.block.codegen(context) if arglist.respond_to?(:block)
     end
   end
   
   class Block < Node
     def codegen(context)
-      
+      puts "in block: (#{arglist.args.map { |a| a.value }.join(", ")})"
+      expressions.each { |exp| exp.codegen(context) }
     end
   end
 end
