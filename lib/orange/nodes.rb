@@ -51,4 +51,10 @@ module Orange
       puts "call: #{receiver.value}.#{message.value}(#{arglist.args.map { |a| a.value }.join(", ")})"
     end
   end
+  
+  class Block < Node
+    def codegen(context)
+      
+    end
+  end
 end

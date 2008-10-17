@@ -1,6 +1,6 @@
 grammar Orange
   rule script
-    expression more_expressions:(linebreak space expression)* <Script> {
+    expression more_expressions:(newline expression)* <Script> {
       def expressions
         [expression] + more_expressions.elements.map { |e| e.expression }
       end
@@ -26,7 +26,7 @@ grammar Orange
   end
   
   rule call
-    receiver:object space message arglist <Call>
+    receiver:object space message space arglist <Call>
   end
   
   rule message
@@ -39,10 +39,13 @@ grammar Orange
   end
   
   rule arglist
-    "(" arglist ")" {
+    block {
       def args; arglist.args end
     } /
-    space receiver:object more_args:(space "," space receiver:object)* {
+    "(" arglist ")" space block? {
+      def args; arglist.args end
+    } /
+    receiver:object more_args:(space "," space receiver:object)* {
       def args
         [receiver] + more_args.elements.map { |e| e.receiver }
       end
@@ -52,12 +55,24 @@ grammar Orange
     }
   end
   
+  rule block
+    "do" newline (expression newline)* "end" <Block>
+  end
+  
+  rule indent
+    [ \t]+
+  end
+  
   rule assign
     var space "=" expression <Assign>
   end
   
   rule var
-    [a-z] [\w]*
+    !keyword [a-z] [\w]*
+  end
+  
+  rule keyword
+    "do" / "end"
   end
   
   rule symbol
@@ -81,14 +96,14 @@ grammar Orange
   end
   
   rule comment
-    "#" [^\n]*
+    '#' ( !newline . )+ ( newline / !. )
   end
   
   rule space
-    [ ]*
+    [ \t]*
   end
   
-  rule linebreak
-    [\n]+ / ";"
+  rule newline
+    space ("\r\n"+ / [\r\n]+ / ";") space
   end
 end

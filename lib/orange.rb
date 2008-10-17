@@ -8,8 +8,12 @@ Treetop.load "orange/grammar.tt"
 
 parser = OrangeParser.new
 
-puts parser.parse(<<-EOS).codegen.to_s
   # ohaie
-  x = 2 + 1
-  you.say "hi"
+  # x = 2 + 1
+  # you.say "hi"
+puts parser.parse(<<-EOS).inspect #codegen.to_s
+  items.each do
+    i.to_s
+    x = 2
+  end
 EOS
