@@ -26,7 +26,10 @@ grammar Orange
   end
   
   rule call
-    receiver:object space message space arglist:call_args <Call>
+    receiver:object space message space arglist:call_args <Call> /
+    message:var space arglist:call_args <Call> {
+      def receiver; nil end
+    }
   end
   
   rule message
@@ -54,7 +57,7 @@ grammar Orange
   end
   
   rule arglist
-    receiver:object more_args:(space "," space receiver:object)* {
+    receiver:statement more_args:(space "," space receiver:statement)* {
       def args
         [receiver] + more_args.elements.map { |e| e.receiver }
       end
@@ -77,7 +80,7 @@ grammar Orange
   end
   
   rule assign
-    var space "=" expression <Assign>
+    var space !"==" "=" expression <Assign>
   end
   
   rule var

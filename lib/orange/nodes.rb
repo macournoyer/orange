@@ -48,7 +48,7 @@ module Orange
   
   class Call < Node
     def codegen(context)
-      puts "call: #{receiver.value}.#{message.value}(#{arglist.args.map { |a| a.value }.join(", ")})"
+      puts "call: #{receiver ? receiver.value : 'self'}.#{message.value}(#{arglist.args.map { |a| a.value }.join(", ")})"
       arglist.codegen(context) if arglist.is_a?(Block)
       arglist.block.codegen(context) if arglist.respond_to?(:block)
     end
@@ -56,7 +56,7 @@ module Orange
   
   class Block < Node
     def codegen(context)
-      puts "in block: (#{arglist.args.map { |a| a.value }.join(", ")})"
+      puts "in block: (#{arglist.args.map { |a| a.value }.join(", ") if arglist})"
       expressions.each { |exp| exp.codegen(context) }
     end
   end
