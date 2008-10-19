@@ -12,11 +12,17 @@ puts parser.parse(<<-EOS).codegen.to_s
   # ohaie
   x = 2 + 1
   x == 2
+  x
   say "hi"
-  items.each :one do |i, j|
+  say
+  self.say = :nice
+  items.each(:one) do |i, j|
     i.say("hi")
   end
-  if (1 == 2) do
-    puts "cool"
+  def :method do |arg1, arg2|
+    puts "nice"
+  end
+  if (x > 1 && x < 4) do
+    exit
   end
 EOS

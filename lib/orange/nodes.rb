@@ -10,8 +10,11 @@ module Orange
   Node = Treetop::Runtime::SyntaxNode
   
   class Context
+    attr_reader :locals
+    
     def initialize
       @out = []
+      @locals = {}
     end
     
     def <<(o)
@@ -41,16 +44,21 @@ module Orange
   
   class Assign < Node
     def codegen(context)
+      context.locals[var.value] = true
       expression.codegen(context)
-      puts "assign: #{var.value} = #{expression.value}"
+      puts "setlocal: #{var.value} = #{expression.value}"
     end
   end
   
   class Call < Node
     def codegen(context)
-      puts "call: #{receiver ? receiver.value : 'self'}.#{message.value}(#{arglist.args.map { |a| a.value }.join(", ")})"
-      arglist.codegen(context) if arglist.is_a?(Block)
-      arglist.block.codegen(context) if arglist.respond_to?(:block)
+      if receiver.nil? && context.locals[message.value]
+        puts "getlocal: #{message.value}"
+      else
+        puts "call: #{receiver ? receiver.value : 'self'}.#{message.value}(#{arglist.args.map { |a| a.value }.join(", ")})"
+        arglist.codegen(context) if arglist.is_a?(Block)
+        arglist.block.codegen(context) if arglist.respond_to?(:block)
+      end
     end
   end
   

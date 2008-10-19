@@ -33,7 +33,14 @@ grammar Orange
   end
   
   rule message
-    "+" / "-" / "==" / "!=" /
+    "==" / "!=" / "<" / "<=" / ">" / ">=" /
+    "||" / "&&" /
+    "+" / "-" / "*" /
+    "." var space "=" {
+      def value
+        var.value + "="
+      end
+    } /
     "." var {
       def value
         var.value
@@ -50,9 +57,6 @@ grammar Orange
           opt_args.arglist.args
         end
       end
-    } /
-    space {
-      def args; [] end
     }
   end
   
@@ -60,6 +64,11 @@ grammar Orange
     receiver:statement more_args:(space "," space receiver:statement)* {
       def args
         [receiver] + more_args.elements.map { |e| e.receiver }
+      end
+    } /
+    space {
+      def args
+        []
       end
     }
   end
@@ -73,10 +82,6 @@ grammar Orange
         block_args.arglist unless block_args.terminal?
       end
     }
-  end
-  
-  rule indent
-    [ \t]+
   end
   
   rule assign
