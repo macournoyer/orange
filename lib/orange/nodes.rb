@@ -27,7 +27,7 @@ module Orange
   end
 
   class Script < Node
-    def codegen
+    def compile(generator)
       context = Context.new
       expressions.each do |exp|
         exp.codegen(context)

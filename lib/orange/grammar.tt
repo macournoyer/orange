@@ -26,7 +26,8 @@ grammar Orange
   end
   
   rule call
-    receiver:object space message space arglist:call_args <Call> /
+    receiver:object space message space arglist:call_args <Call>
+    /
     message:var space arglist:call_args <Call> {
       def receiver; nil end
     }
