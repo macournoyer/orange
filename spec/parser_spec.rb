@@ -17,6 +17,10 @@ describe OrangeParser do
     @parser.parse("x == 2").should_not be_nil
   end
 
+  it "should parse operator with expressions" do
+    @parser.parse("x == 2 && a == 1").should_not be_nil
+  end
+
   it "should parse method call" do
     @parser.parse("puts").should_not be_nil
   end
@@ -27,18 +31,6 @@ describe OrangeParser do
 
   it "should parse method call with arg and parent" do
     @parser.parse(%Q{puts("hi")}).should_not be_nil
-  end
-  
-  it "should parse method call with =" do
-    @parser.parse(%Q{self.nice = "hi"}).should_not be_nil
-  end
-  
-  it "should parse method call with block" do
-    @parser.parse("items.each(:one) do |i, j|\n puts 1\nend").should_not be_nil
-  end
-  
-  it "should parse method call with block" do
-    @parser.parse("items.each do |i, j|\n end").should_not be_nil
   end
   
   it "should parse method call with expression as args" do

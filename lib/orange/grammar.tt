@@ -18,75 +18,53 @@ grammar Orange
   end
   
   rule statement
-    assign / call / object / comment
+    cmp / assign / call / equation / if / def / object / comment
   end
   
   rule object
-    symbol / number / string / var
+    number / string / var
   end
   
   rule call
-    receiver:object space message space arglist:call_args <Call>
-    /
-    message:var space arglist:call_args <Call> {
-      def receiver; nil end
-    }
+    func:var arglist <Call>
   end
   
-  rule message
-    "==" / "!=" / "<" / "<=" / ">" / ">=" /
-    "||" / "&&" /
-    "+" / "-" / "*" /
-    "." var space "=" {
-      def value
-        var.value + "="
-      end
-    } /
-    "." var {
-      def value
-        var.value
-      end
-    }
+  rule def
+    "def" space var arglist space newline
+      expressions:(expression newline)* space
+    "end"
   end
   
-  rule call_args
-    opt_args:("(" arglist ")" / arglist) space block:block? {
-      def args
-        if opt_args.respond_to?(:args)
-          opt_args.args
-        else
-          opt_args.arglist.args
-        end
-      end
-    }
+  rule if
+    "if" space expression space newline
+      expressions:(expression newline)* space
+    "end"
+  end
+  
+  rule cmp
+    object space op:("&&" / "||" / "==" / "!=" / ">" / "<") space expression
+  end
+  
+  # Fix operator precedance
+  rule equation
+    object space op:[\+\-\/\*] space expression
   end
   
   rule arglist
-    receiver:statement more_args:(space "," space receiver:statement)* {
+    "(" arg:statement more_args:(space "," space arg:statement)* ")" {
       def args
-        [receiver] + more_args.elements.map { |e| e.receiver }
+        [arg] + more_args.elements.map { |e| e.arg }
       end
     } /
-    space {
+    "()" {
       def args
         []
       end
     }
   end
   
-  rule block
-    "do" block_args:(space "|" arglist "|" space)? newline more_expressions:(expression newline)* "end" <Block> {
-      def expressions
-        more_expressions.elements.map { |e| e.expression }
-      end
-      def arglist
-        block_args.arglist unless block_args.terminal?
-      end
-    }
-  end
-  
   rule assign
-    var space !"==" "=" expression <Assign>
+    var space "=" !"=" expression <Assign>
   end
   
   rule var
@@ -94,11 +72,7 @@ grammar Orange
   end
   
   rule keyword
-    "do" / "end"
-  end
-  
-  rule symbol
-    ":" var
+    "def" / "end"
   end
   
   rule number
