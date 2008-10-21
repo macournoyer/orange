@@ -30,15 +30,23 @@ grammar Orange
   end
   
   rule def
-    "def" space var arglist space newline
+    "def" space func:var arglist space newline
       expressions:(expression newline)* space
-    "end"
+    "end" <Def> {
+      def expressions
+        super.elements.map { |e| e.expression }
+      end
+    }
   end
   
   rule if
-    "if" space expression space newline
+    "if" space condition:expression space newline
       expressions:(expression newline)* space
-    "end"
+    "end" <If> {
+      def expressions
+        super.elements.map { |e| e.expression }
+      end
+    }
   end
   
   rule cmp
@@ -68,7 +76,7 @@ grammar Orange
   end
   
   rule var
-    !keyword [a-z] [\w]*
+    !keyword [a-z] [\w]* <Var>
   end
   
   rule keyword
@@ -76,7 +84,7 @@ grammar Orange
   end
   
   rule number
-    [0-9]+ {
+    [0-9]+ <Number> {
       def value
         text_value.to_i
       end
@@ -84,7 +92,7 @@ grammar Orange
   end
   
   rule string
-    '"' (!'"' . / '\"')* '"' {
+    '"' (!'"' . / '\"')* '"' <String> {
       def value
         text_value.gsub('"', '')
       end

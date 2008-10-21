@@ -9,63 +9,63 @@ module Orange
   end
   Node = Treetop::Runtime::SyntaxNode
   
-  class Context
-    attr_reader :locals
-    
-    def initialize
-      @out = []
-      @locals = {}
-    end
-    
-    def <<(o)
-      @out << o
-    end
-    
-    def to_s
-      @out.compact.join("\n")
-    end
-  end
-
   class Script < Node
     def compile(generator)
-      context = Context.new
-      expressions.each do |exp|
-        exp.codegen(context)
-      end
-      context
+      expressions.each { |e| e.codegen(generator) }
+      generator.finish
     end
   end
 
   class Expression < Node
-    def codegen(context)
-      statements.each { |s| s.codegen(context) }
+    def codegen(g)
+      statements.map { |s| s.codegen(g) }
     end
   end
   
   class Assign < Node
-    def codegen(context)
-      context.locals[var.value] = true
-      expression.codegen(context)
-      puts "setlocal: #{var.value} = #{expression.value}"
+    def codegen(g)
+      g.assign var.value, expression.codegen(g).last
     end
   end
   
   class Call < Node
-    def codegen(context)
-      if receiver.nil? && context.locals[message.value]
-        puts "getlocal: #{message.value}"
-      else
-        puts "call: #{receiver ? receiver.value : 'self'}.#{message.value}(#{arglist.args.map { |a| a.value }.join(", ")})"
-        arglist.codegen(context) if arglist.is_a?(Block)
-        arglist.block.codegen(context) if arglist.respond_to?(:block)
-      end
+    def codegen(g)
+      arg_values = arglist.args.map { |arg| arg.codegen(g) }
+      g.call(func.value, *arg_values)
     end
   end
   
-  class Block < Node
-    def codegen(context)
-      puts "in block: (#{arglist.args.map { |a| a.value }.join(", ") if arglist})"
-      expressions.each { |exp| exp.codegen(context) }
+  class Def < Node
+    def codegen(g)
+      puts "def: #{func.value}"
+      expressions.each { |e| e.codegen(g) }
+      puts "end"
+    end
+  end
+  
+  class If < Node
+    def codegen(g)
+      puts "if: #{condition.value}"
+      expressions.each { |e| e.codegen(g) }
+      puts "end"
+    end
+  end
+  
+  class Var < Node
+    def codegen(g)
+      g.load(value)
+    end
+  end
+  
+  class String < Node
+    def codegen(g)
+      g.new_string(value)
+    end
+  end
+  
+  class Number < Node
+    def codegen(g)
+      value.llvm
     end
   end
 end
