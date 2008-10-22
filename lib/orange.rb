@@ -11,14 +11,16 @@ else
   Treetop.load File.dirname(__FILE__) + "/orange/grammar.tt"
 end
 
-g = Orange::Generator.new
-OrangeParser.new.parse(<<-EOS).compile(g).to_s
-  def test()
-    x = "ohaie"
-    printf(x)
-  end
-  test()
-EOS
-puts g.inspect
-# g.optimize
-g.run
+if __FILE__ == $PROGRAM_NAME
+  g = Orange::Generator.new
+  OrangeParser.new.parse(<<-EOS).compile(g).to_s
+    def test()
+      x = "ohaie"
+      printf(x)
+    end
+    test()
+  EOS
+  puts g.inspect
+  # g.optimize
+  g.run
+end

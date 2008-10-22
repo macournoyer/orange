@@ -67,7 +67,7 @@ module Orange
   
   class Number < Node
     def codegen(g)
-      value.llvm
+      g.new_number(value)
     end
   end
 end

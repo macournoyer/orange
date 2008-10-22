@@ -24,6 +24,10 @@ module Orange
       @entry_block.create_global_string_ptr(value)
     end
     
+    def new_number(value)
+      value.llvm
+    end
+    
     def call(func, *args)
       f = @module.get_function(func)
       @entry_block.call(f, *args)
