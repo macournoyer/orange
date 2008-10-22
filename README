@@ -14,6 +14,12 @@
   use LLVM to construct one of the fastest
   and awesomer runtime ever build on a lap-
   top by mankind in the history of GitHub!
-  Hurray comrades!
+               
+              Hurray comrades!
   
-               (c) macournoyer
+                PS.: to use:
+    sudo gem install tombagby-llvmruby \
+      --source http://gems.github.com \
+       && bin/orange example/simple.or
+  
+              (c) macournoyer
