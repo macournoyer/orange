@@ -1,0 +1,29 @@
+#!/usr/bin/env ruby -s
+$:.unshift File.dirname(__FILE__) + "/../lib"
+require "orange"
+
+if $h
+  puts <<-EOS
+  
+              ~= oRANGe =~
+  
+             To run a file
+            orange juicy.or
+  
+       To compile to LLVM bytecode
+        orange -c=fresh.o yummy.or
+  
+  EOS
+  exit
+end
+
+file = ARGV.first
+abort "Usage: orange [-hi] [-c=file.o] file.or" unless file
+
+g = Orange.compile(File.read(file))
+
+case
+when $i: puts g.inspect
+when $c: g.to_file(TrueClass === $c ? file + ".o" : $c)
+else     g.run
+end

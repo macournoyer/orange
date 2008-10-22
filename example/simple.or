@@ -1,0 +1,8 @@
+# Simple test...
+
+def test()
+  x = "ohaie"
+  printf(x)
+end
+
+test()
