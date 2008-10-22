@@ -11,6 +11,7 @@ module Orange
   
   class Script < Node
     def compile(generator)
+      generator.preamble
       expressions.each { |e| e.codegen(generator) }
       generator.finish
     end
@@ -37,9 +38,10 @@ module Orange
   
   class Def < Node
     def codegen(g)
-      puts "def: #{func.value}"
-      expressions.each { |e| e.codegen(g) }
-      puts "end"
+      # TODO args
+      g.function(func.value) do |gf|
+        expressions.each { |e| e.codegen(gf) }
+      end
     end
   end
   

@@ -13,9 +13,12 @@ end
 
 g = Orange::Generator.new
 OrangeParser.new.parse(<<-EOS).compile(g).to_s
-  x = "ohaie"
-  printf(x)
+  def test()
+    x = "ohaie"
+    printf(x)
+  end
+  test()
 EOS
 puts g.inspect
-g.optimize
+# g.optimize
 g.run
