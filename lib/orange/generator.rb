@@ -8,33 +8,6 @@ module Orange
     PCHAR = Type.pointer(Type::Int8Ty)
     INT   = Type::Int32Ty
     
-    class Value
-      STRUCT = LLVM::Type.struct([INT, INT, PCHAR])
-      TYPES  = [:int, :string, :ptr]
-      attr_reader :type, :value, :ptr
-      
-      def initialize(value, type)
-        @value = value
-        @type = type
-      end
-      
-      def alloc(b)
-        struct = b.alloca(STRUCT, 0)
-        v = b.struct_gep(struct, 0)
-        b.store(TYPES.index(@type).llvm, v)
-        v = case @type
-        when :int:    b.struct_gep(struct, 1)
-        when :string: b.struct_gep(struct, 2)
-        end
-        b.store(@value, v)
-        @ptr = struct
-      end
-      
-      def load_str(b)
-        
-      end
-    end
-    
     def initialize(mod = LLVM::Module.new("orange"), function=nil)
       @module   = mod
       @locals   = {}
