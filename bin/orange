@@ -18,9 +18,10 @@ if $h
 end
 
 file = ARGV.first
-abort "Usage: orange [-hi] [-c=file.o] file.or" unless file
+abort "Usage: orange [-hiO] [-c=file.o] file.or" unless file
 
 g = Orange.compile(File.read(file))
+g.optimize unless $O
 
 case
 when $i: puts g.inspect

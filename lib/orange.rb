@@ -13,9 +13,18 @@ else
 end
 
 module Orange
+  class ParserError < RuntimeError; end
+  
   def self.compile(code)
-    g = Orange::Generator.new
-    OrangeParser.new.parse(code).compile(g)
-    g
+    generator = Orange::Generator.new
+    parser    = OrangeParser.new
+    
+    if node = parser.parse(code)
+      node.compile(generator)
+    else
+      raise ParserError, parser.failure_reason
+    end
+    
+    generator
   end
 end
