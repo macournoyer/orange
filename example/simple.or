@@ -1,8 +1,20 @@
 # Simple test...
 
 def test()
-  x = "ohaie"
-  printf(x)
+  x = 1
+  y = "ohaie"
+  printf("%d, %s", x, y)
 end
 
+def input()
+  buf = " "
+  read(0, buf, 1)
+  puts(buf)
+end
+
+puts("== test")
 test()
+puts("== input")
+input()
+puts("== exit")
+exit(7)

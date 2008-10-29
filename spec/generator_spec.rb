@@ -26,7 +26,7 @@ describe Orange::Generator do
     @generator.run
   end
 
-  it "should call assign var" do
+  it "should call assign string var" do
     str = @generator.new_string("")
     @generator.assign("x", str)
     @generator.call("printf", @generator.load("x"))
@@ -35,6 +35,18 @@ describe Orange::Generator do
     @generator.inspect.should include("alloca",
                                       "store i8* getelementptr",
                                       "load i8**")
+    @generator.run
+  end
+
+  it "should call assign numeric var" do
+    num = @generator.new_number(7)
+    @generator.assign("x", num)
+    @generator.call("printf", @generator.new_string("%d"), @generator.load("x"))
+    @generator.finish
+    
+    @generator.inspect.should include("alloca",
+                                      "store i32 7",
+                                      "load i32")
     @generator.run
   end
 end
